@@ -32,7 +32,7 @@ jobs:
     - name: creating the archive
       run: tar -czf build.tar.gz dist/frontend
     - name: uploading the artifact
-      uses: actions/upload-artifact@v2
+      uses: actions/upload-artifact@v4
       with: 
         name: build-artifact
         path: build.tar.gz
@@ -43,7 +43,7 @@ jobs:
       - name: checkout repository
         uses: actions/checkout@v4
       - name: download build artifact
-        uses: actions/download-artifact@v2
+        uses: actions/download-artifact@v4
         with: 
           name: build-artifact
           path: build/

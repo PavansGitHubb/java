@@ -12,7 +12,7 @@ on:
 jobs:
   build:
 
-    runs-on: self-hosted
+    runs-on: actions-runner
     
 
     strategy:
@@ -38,7 +38,7 @@ jobs:
         path: build.tar.gz
   deploy: 
     needs: build
-    runs-on: self-hosted
+    runs-on: actions-runner
     steps: 
       - name: checkout repository
         uses: actions/checkout@v4

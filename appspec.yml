@@ -1,26 +1,16 @@
 version: 0.0
 os: linux
-
 files:
   - source: /
-    destination: /home/ubuntu/pawan  # Change destination to /home/ubuntu/app
-
+    destination: /home/ubuntu/app
 permissions:
-  - object: /home/ubuntu/pawan
-    pattern: "**"
+  - object: /home/ubuntu/app/scripts/deploy.sh
+    pattern: "*.sh"
     owner: ubuntu
+    group: ubuntu
     mode: 755
-
 hooks:
-  BeforeInstall:
-    - location: scripts/before_install.sh
-      timeout: 300
-      runas: ubuntu
   AfterInstall:
-    - location: scripts/after_install.sh
-      timeout: 300
-      runas: ubuntu
-  ApplicationStart:
-    - location: scripts/start.sh
+    - location: scripts/deploy.sh
       timeout: 300
       runas: ubuntu

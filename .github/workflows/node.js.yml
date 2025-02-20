@@ -1,4 +1,4 @@
-# This workflow will do a clean installation of node dependencies, cache/restore them, build the source code and run tests across different versions of node
+# This workflow will do a clean installation of node dependencies, cache/restore them, and build the source code.
 # For more information see: https://docs.github.com/en/actions/automating-builds-and-tests/building-and-testing-nodejs
 
 name: Node.js CI
@@ -11,9 +11,7 @@ on:
 
 jobs:
   build:
-
     runs-on: self-hosted
-    
 
     strategy:
       matrix:
@@ -21,42 +19,18 @@ jobs:
         # See supported Node.js release schedule at https://nodejs.org/en/about/releases/
 
     steps:
-    - uses: actions/checkout@v4
-    - name: Use Node.js ${{ matrix.node-version }}
-      uses: actions/setup-node@v4
-      with:
-        node-version: ${{ matrix.node-version }}
-        cache: 'npm'
-    - run: npm ci
-    - run: npm run build --if-present
-    - name: creating the archive
-      run: tar -czf build.tar.gz dist/frontend
-    - name: uploading the artifact
-      uses: actions/upload-artifact@v4
-      with: 
-        name: build-artifact
-        path: build.tar.gz
-  deploy: 
-    needs: build
-    runs-on: self-hosted
-    steps: 
-      - name: checkout repository
-        uses: actions/checkout@v4
-      - name: download build artifact
-        uses: actions/download-artifact@v4
+      - uses: actions/checkout@v4
+      - name: Use Node.js ${{ matrix.node-version }}
+        uses: actions/setup-node@v4
+        with:
+          node-version: ${{ matrix.node-version }}
+          cache: 'npm'
+      - run: npm ci
+      - run: npm run build --if-present
+      - name: Creating the archive
+        run: tar -czf build.tar.gz dist/frontend
+      - name: Uploading the artifact
+        uses: actions/upload-artifact@v4
         with: 
           name: build-artifact
-          path: build/
-      - name: deploy via ssh
-        env: 
-          SSH_PRIVATE_KEY: ${{ secrets.SSH_KEY }}
-        run: |
-          mkdir -p ~/.ssh
-          echo "$SSH_PRIVATE_KEY" > ~/.ssh/id_rsa
-          chmod 600 ~/.ssh/id_rsa
-          ssh-keyscan -H ${{ secrets.SSH_HOST }} >> ~/.ssh/known_hosts
-          scp -i ~/.ssh/id_rsa -P ${{ secrets.SSH_PORT }} build/build.tar.gz ${{ secrets.SSH_USER }}@${{ secrets.SSH_HOST }}:/home/azureuser/pawan
-          ssh -i ~/.ssh/id_rsa -p ${{ secrets.SSH_PORT }} ${{ secrets.SSH_USER }}@${{ secrets.SSH_HOST }} << 'EOF'
-            cd /home/azureuser/pawan
-            tar -xzf build.tar.gz
-          EOF
+          path: build.tar.gz

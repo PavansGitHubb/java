@@ -2,9 +2,22 @@ version: 0.0
 os: linux
 files:
   - source: /
-    destination: /var/www/html
+    destination: /home/ubuntu/app
+permissions:
+  - object: /home/ubuntu/app
+    pattern: "**"
+    owner: ubuntu
+    mode: 755
 hooks:
+  BeforeInstall:
+    - location: scripts/before_install.sh
+      timeout: 300
+      runas: ubuntu
   AfterInstall:
-    - location: scripts/deploy.sh
+    - location: scripts/after_install.sh
+      timeout: 300
+      runas: ubuntu
+  ApplicationStart:
+    - location: scripts/start.sh
       timeout: 300
       runas: ubuntu

@@ -1,60 +1,36 @@
-name: Node.js CI/CD
+
+name: Node.js CI
 
 on:
   push:
     branches: [ "main" ]
+  pull_request:
+    branches: [ "main" ]
 
 jobs:
   build:
+
     runs-on: self-hosted
+    
 
     strategy:
       matrix:
         node-version: [18.x]
+        # See supported Node.js release schedule at https://nodejs.org/en/about/releases/
 
     steps:
-      - name: Checkout repository
-        uses: actions/checkout@v4
-
-      - name: Use Node.js ${{ matrix.node-version }}
-        uses: actions/setup-node@v4
-        with:
-          node-version: ${{ matrix.node-version }}
-          cache: 'npm'
-
-      - name: Install dependencies
-        run: npm ci
-
-      - name: Build the project
-        run: npm run build --if-present
-
-      - name: Create deployment package
-        run: |
-          mkdir -p codedeploy
-          cp -r dist/frontend codedeploy/
-          cp appspec.yml codedeploy/
-          mkdir -p codedeploy/scripts
-          cp scripts/restart_server.sh codedeploy/scripts/
-          tar -czf codedeploy/build.tar.gz -C codedeploy .
-
-      - name: Upload to S3
-        run: aws s3 cp codedeploy/build.tar.gz s3://your-s3-bucket-name/build.tar.gz
-        env:
-          AWS_ACCESS_KEY_ID: ${{ secrets.AWS_ACCESS_KEY_ID }}
-          AWS_SECRET_ACCESS_KEY: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
-          AWS_REGION: "us-east-1"
-
-  deploy:
-    needs: build
-    runs-on: ubuntu-latest
-    steps:
-      - name: Deploy to EC2 using AWS CodeDeploy
-        run: |
-          aws deploy create-deployment \
-            --application-name CICD \
-            --deployment-group-name dev-CICD \
-            --s3-location bucket=your-s3-bucket-name,key=build.tar.gz,bundleType=tgz
-        env:
-          AWS_ACCESS_KEY_ID: ${{ secrets.AWS_ACCESS_KEY_ID }}
-          AWS_SECRET_ACCESS_KEY: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
-          AWS_REGION: "us-east-1"
+    - uses: actions/checkout@v4
+    - name: Use Node.js ${{ matrix.node-version }}
+      uses: actions/setup-node@v4
+      with:
+        node-version: ${{ matrix.node-version }}
+        cache: 'npm'
+    - run: npm ci
+    - run: npm run build --if-present
+    - name: creating the archive
+      run: tar -czf build.tar.gz dist/frontend
+    - name: uploading the artifact
+      uses: actions/upload-artifact@v4
+      with: 
+        name: build-artifact
+        path: build.tar.gz

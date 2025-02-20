@@ -1,13 +1,16 @@
 version: 0.0
 os: linux
+
 files:
   - source: /
-    destination: /home/ubuntu/app
+    destination: /home/ubuntu/pawan  # Change destination to /home/ubuntu/app
+
 permissions:
-  - object: /home/ubuntu/app
+  - object: /home/ubuntu/pawan
     pattern: "**"
     owner: ubuntu
     mode: 755
+
 hooks:
   BeforeInstall:
     - location: scripts/before_install.sh

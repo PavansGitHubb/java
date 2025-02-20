@@ -1,7 +1,7 @@
 #!/bin/bash
 echo "Restarting application..."
 
-# Stop the existing process
+# Stop any existing process
 sudo pkill -f "node" || true
 
 # Move new deployment

@@ -29,8 +29,15 @@ jobs:
     - name: Create the archive
       run: tar -czf build.tar.gz dist/
 
-    - name: Upload artifact to S3
-      run: aws s3 cp build.tar.gz s3://awss3forproject1/build.tar.gz --region ap-south-1
+    
+
       env:
         AWS_ACCESS_KEY_ID: ${{ secrets.AWS_ACCESS_KEY_ID }}
         AWS_SECRET_ACCESS_KEY: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
+        
+    - name: Copy appspec.yml to dist folder
+      run: cp appspec.yml dist/
+
+    - name: Upload artifact to S3
+      run: aws s3 cp dist/ s3://awss3forproject1/ --recursive --region ap-south-1
+

@@ -1,5 +1,4 @@
-
-name: Node.js CI
+name: Angular Build and Upload to S3
 
 on:
   push:
@@ -9,28 +8,29 @@ on:
 
 jobs:
   build:
-
     runs-on: ubuntu-latest
-    
-
-    strategy:
-      matrix:
-        node-version: [18.x]
-        # See supported Node.js release schedule at https://nodejs.org/en/about/releases/
 
     steps:
-    - uses: actions/checkout@v4
-    - name: Use Node.js ${{ matrix.node-version }}
+    - name: Checkout code
+      uses: actions/checkout@v4
+
+    - name: Use Node.js 18
       uses: actions/setup-node@v4
       with:
-        node-version: ${{ matrix.node-version }}
+        node-version: 18
         cache: 'npm'
-    - run: npm ci
-    - run: npm run build --if-present
-    - name: creating the archive
-      run: tar -czf build.tar.gz dist/frontend
-    - name: uploading the artifact
-      uses: actions/upload-artifact@v4
-      with: 
-        name: build-artifact
-        path: build.tar.gz
+
+    - name: Install dependencies
+      run: npm ci
+
+    - name: Build the project
+      run: npm run build --prod
+
+    - name: Create the archive
+      run: tar -czf build.tar.gz dist/
+
+    - name: Upload to S3
+      run: aws s3 cp build.tar.gz s3://awss3forproject1/build.tar.gz --region ap-south-1
+      env:
+        AWS_ACCESS_KEY_ID: ${{ secrets.AWS_ACCESS_KEY_ID }}
+        AWS_SECRET_ACCESS_KEY: ${{ secrets.AWS_SECRET_ACCESS_KEY }}

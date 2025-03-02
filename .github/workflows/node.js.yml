@@ -34,14 +34,3 @@ jobs:
       env:
         AWS_ACCESS_KEY_ID: ${{ secrets.AWS_ACCESS_KEY_ID }}
         AWS_SECRET_ACCESS_KEY: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
-
-    - name: Deploy to AWS CodeDeploy
-      run: |
-        aws deploy create-deployment \
-          --application-name CICD \
-          --deployment-group-name dev-CICD \
-          --s3-location bucket=awss3forproject1,key=build.tar.gz,bundleType=tgz \
-          --region ap-south-1
-      env:
-        AWS_ACCESS_KEY_ID: ${{ secrets.AWS_ACCESS_KEY_ID }}
-        AWS_SECRET_ACCESS_KEY: ${{ secrets.AWS_SECRET_ACCESS_KEY }}

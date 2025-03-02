@@ -1,10 +1,13 @@
 version: 0.0
 os: linux
-
 files:
   - source: /
     destination: /home/ubuntu/angular-app
-
+permissions:
+  - object: /home/ubuntu/angular-app
+    owner: ubuntu
+    group: ubuntu
+    mode: 755
 hooks:
   AfterInstall:
     - location: scripts/deploy.sh

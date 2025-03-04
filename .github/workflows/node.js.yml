@@ -1,4 +1,4 @@
-name: Angular Build and Upload to S3
+name: Angular Build and Upload to S3 to CD
 
 on:
   push:

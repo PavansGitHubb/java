@@ -1,4 +1,4 @@
-name: Angular Build, Upload to S3, and Deploy to AWS CodeDeploy
+name: Angular Build and Upload to S3
 
 on:
   push:
@@ -36,22 +36,6 @@ jobs:
 
     - name: Upload artifact to S3
       run: aws s3 cp deploy.zip s3://awss3forproject1/ --region ap-south-1
-      env:
-        AWS_ACCESS_KEY_ID: ${{ secrets.AWS_ACCESS_KEY_ID }}
-        AWS_SECRET_ACCESS_KEY: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
-
-  deploy:
-    needs: build
-    runs-on: ubuntu-latest
-
-    steps:
-    - name: Deploy to AWS CodeDeploy
-      run: |
-        aws deploy create-deployment \
-          --application-name CICD \
-          --deployment-group-name dev-CICD \
-          --s3-location bucket=awss3forproject1,key=deploy.zip,bundleType=zip \
-          --region ap-south-1
       env:
         AWS_ACCESS_KEY_ID: ${{ secrets.AWS_ACCESS_KEY_ID }}
         AWS_SECRET_ACCESS_KEY: ${{ secrets.AWS_SECRET_ACCESS_KEY }}

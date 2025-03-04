@@ -24,13 +24,34 @@ jobs:
       run: npm ci
 
     - name: Build the Angular project
-      run: npm run build --prod
+      run: npm run build -- --configuration=production
 
-    - name: Copy appspec.yml to dist folder
-      run: cp appspec.yml dist/
+    - name: Prepare deployment package
+      run: |
+        mkdir -p deploy
+        cp -r dist/ deploy/
+        cp appspec.yml deploy/
+        cp -r scripts/ deploy/
+        cd deploy && zip -r ../deploy.zip . && cd ..
 
     - name: Upload artifact to S3
-      run: aws s3 cp dist/ s3://awss3forproject1/ --recursive --region ap-south-1
+      run: aws s3 cp deploy.zip s3://awss3forproject1/ --region ap-south-1
+      env:
+        AWS_ACCESS_KEY_ID: ${{ secrets.AWS_ACCESS_KEY_ID }}
+        AWS_SECRET_ACCESS_KEY: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
+
+  deploy:
+    needs: build
+    runs-on: ubuntu-latest
+
+    steps:
+    - name: Deploy to AWS CodeDeploy
+      run: |
+        aws deploy create-deployment \
+          --application-name CICD \
+          --deployment-group-name dev-CICD \
+          --s3-location bucket=awss3forproject1,key=deploy.zip,bundleType=zip \
+          --region ap-south-1
       env:
         AWS_ACCESS_KEY_ID: ${{ secrets.AWS_ACCESS_KEY_ID }}
         AWS_SECRET_ACCESS_KEY: ${{ secrets.AWS_SECRET_ACCESS_KEY }}

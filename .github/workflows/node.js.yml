@@ -31,7 +31,8 @@ jobs:
         mkdir -p deploy
         cp -r dist/ deploy/
         cp appspec.yml deploy/
-        cp -r scripts/ deploy/
+        cp -r scripts/ deploy/  
+        chmod +x deploy/scripts/*.sh  # Ensure scripts are executable
         cd deploy && zip -r ../deploy.zip . && cd ..
 
     - name: Upload artifact to S3

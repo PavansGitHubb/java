@@ -1,6 +1,6 @@
 #!/bin/bash
-set -e
+#set -e
 
-echo "Restarting Nginx..."
-sudo systemctl restart nginx
-echo "Nginx restarted successfully!"
+#echo "Restarting Nginx..."
+#sudo systemctl restart nginx
+#echo "Nginx restarted successfully!"

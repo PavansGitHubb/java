@@ -2,7 +2,7 @@ version: 0.0
 os: linux
 files:
   - source: /
-    destination: var/log/aws/codedeploy-agent
+    destination: /home/ubuntu/angular-app/
 
 hooks:
   BeforeInstall:

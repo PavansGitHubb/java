@@ -2,10 +2,18 @@ version: 0.0
 os: linux
 files:
   - source: /
-    destination: /home/ubuntu/angular-app/
-
+    destination: /var/www/angular-app
+permissions:
+  - object: /var/www/angular-app
+    owner: ubuntu
+    group: ubuntu
+    mode: 755
 hooks:
   BeforeInstall:
     - location: scripts/before_install.sh
       timeout: 300
-      runas: ubuntu
+      runas: root
+  AfterInstall:
+    - location: scripts/restart_server.sh
+      timeout: 300
+      runas: root
